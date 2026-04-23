@@ -18,3 +18,5 @@ npm-debug.log
 #original datasets
 utils/data.csv
 utils/codebook.csv
+# Local Netlify folder
+.netlify
