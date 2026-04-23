@@ -8,6 +8,7 @@ import { scalePow, interpolateWarm } from 'd3-scale';
 import { extent } from 'd3-array';
 
 import { barGraph } from './bar.js';
+import { dedent } from './dedent.js';
 
 /*----------  EXPORT  ----------*/
 

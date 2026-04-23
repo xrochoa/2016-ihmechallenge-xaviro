@@ -1,4 +1,5 @@
-import { styles } from 'd3-selection-multi';
+// side-effect import: augments d3-selection with `.styles()` and friends
+import 'd3-selection-multi';
 
 /*----------  EXPORT  ----------*/
 

@@ -1,11 +1,18 @@
 /*----------  LIBRARIES  ----------*/
 
-import { json } from 'd3-request';
 import { feature } from 'topojson-client';
 
 import { selectBoxSex } from './select-sex.js';
 
 /*----------  REQUEST  ----------*/
+
+// Small wrapper around fetch → JSON to keep call sites compact.
+function loadJson(url) {
+    return fetch(url).then((res) => {
+        if (!res.ok) throw new Error(`Failed to load ${url}: ${res.status}`);
+        return res.json();
+    });
+}
 
 export function request(dispatcher) {
 
@@ -22,8 +29,7 @@ export function request(dispatcher) {
         metric: 'overweight'
     };
 
-    json('./assets/res/world-custom.json', function(error, world) {
-        if (error) throw error;
+    loadJson('./assets/res/world-custom.json').then((world) => {
 
         //countries topojson
         countries = feature(world, world.objects.map).features;
@@ -34,7 +40,7 @@ export function request(dispatcher) {
         //emmiter when ready
         dispatcher.call('TOPOJSON_LOADED', this, countries); //used for map creation
 
-    });
+    }).catch((err) => console.error(err));
 
     /*----------  DATA  ----------*/
 
@@ -49,13 +55,14 @@ export function request(dispatcher) {
 
         let { year, age_group_id, sex_id, metric } = data; //destructured assignment
 
-        json(`https://ihme-f3ac5.firebaseio.com/${year}/${age_group_id}/${sex_id}/${metric}.json`, function(error, countryData) {
-            if (error) throw error;
+        // Data originally came from a Firebase endpoint; it's now bundled as
+        // static JSON mirroring the same path structure.
+        let url = `./assets/res/data/${year}/${age_group_id}/${sex_id}/${metric}.json`;
 
+        loadJson(url).then((countryData) => {
             //emmiter when ready
             dispatcher.call('DATA_LOADED', this, countryData);
-
-        });
+        }).catch((err) => console.error(err));
 
     });
 
